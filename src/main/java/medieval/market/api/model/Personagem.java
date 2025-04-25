@@ -6,7 +6,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +23,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Personagem {
 
-    enum Classe {
+    public enum Classe {
         GUERREIRO,
         MAGO,
         ARQUEIRO
@@ -33,15 +36,17 @@ public class Personagem {
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @NotBlank(message = "A classe é obrigatória")
+    @NotNull(message = "A classe é obrigatória")
     @Enumerated(EnumType.STRING)
     private Classe classe;
 
-    @NotBlank(message = "O nível é obrigatório")
-    @Size(min = 1, max = 99, message = "O nível deve ser entre 1 e 99")
+    @NotNull(message = "O nível é obrigatório")
+    @Min(value = 1, message = "O nível mínimo é 1")
+    @Max(value = 99, message = "O nível máximo é 99")
     private Integer nivel;
 
-    @NotBlank(message = "O saldo é obrigatório")
+    @NotNull(message = "O saldo é obrigatório")
+    @Min(value = 0, message = "O saldo não pode ser negativo")
     private Integer moedas;
 
 }

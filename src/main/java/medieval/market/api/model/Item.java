@@ -1,11 +1,8 @@
 package medieval.market.api.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,15 +35,18 @@ public class Item {
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @NotBlank(message = "O tipo é obrigatório")
+    @NotNull(message = "O tipo é obrigatório")
+    @Enumerated(EnumType.STRING)
     private Tipo tipo;
 
-    @NotBlank(message = "A raridade é obrigatória")
-    @Enumerated
+    @NotNull(message = "A raridade é obrigatória")
+    @Enumerated(EnumType.STRING)
     private Raridade raridade;
 
-    @NotBlank(message = "O preço é obrigatório")
+    @NotNull(message = "O preço é obrigatório")
     private Integer preco;
 
+    @NotNull(message = "O dono é obrigatório")
     private Personagem dono;
 }
+
