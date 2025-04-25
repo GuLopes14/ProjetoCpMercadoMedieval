@@ -8,26 +8,27 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-enum Tipo {
-    ARMA,
-    ARMADURA,
-    POCAO,
-    ACESSORIO
-}
-
-enum Raridade {
-    COMUM,
-    RARO,
-    EPICO,
-    LENDARIO
-}
-
 @Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class Item {
+
+    public enum Tipo {
+        ARMA,
+        ARMADURA,
+        POCAO,
+        ACESSORIO
+    }
+    
+    public enum Raridade {
+        COMUM,
+        RARO,
+        EPICO,
+        LENDARIO
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -46,6 +47,8 @@ public class Item {
     @NotNull(message = "O preço é obrigatório")
     private Integer preco;
 
+    @ManyToOne(fetch = FetchType.EAGER) 
+    @JoinColumn(name = "personagem_id")  
     @NotNull(message = "O dono é obrigatório")
     private Personagem dono;
 }

@@ -1,4 +1,4 @@
-package medieval.market.api.Controller;
+package medieval.market.api.controller;
 
 import java.util.List;
 
@@ -7,6 +7,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -22,7 +26,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import jakarta.validation.Valid;
 import medieval.market.api.model.Personagem;
+import medieval.market.api.model.Personagem.Classe;
 import medieval.market.api.repository.PersonagemRepository;
+import medieval.market.api.specification.PersonagemSpecification;
 
 @RestController
 @RequestMapping("/personagem")
@@ -31,13 +37,16 @@ public class PersonagemController {
     private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
-
     private PersonagemRepository repository;
 
+    public record PersonagemFilter(String nome, Classe classe) {
+    }
+    
     @GetMapping
-    @Cacheable("personagem")
-    public List<Personagem> index() {
-        return repository.findAll();
+    public Page<Personagem> index(PersonagemFilter filters,
+            @PageableDefault(size = 10, sort = "nome", direction = Direction.ASC) Pageable pageable) {
+        var specification = PersonagemSpecification.withFilters(filters);
+        return repository.findAll(specification, pageable);
     }
 
     @PostMapping
@@ -51,7 +60,7 @@ public class PersonagemController {
 
     @GetMapping("/{id}")
     public Personagem get(@PathVariable Long id) {
-        log.info("Buscando anúncio " + id);
+        log.info("Buscando personagem " + id);
         return getPersonagem(id);
     }
 
@@ -64,9 +73,9 @@ public class PersonagemController {
     }
 
     @PutMapping("/{id}")
-    @CacheEvict(value = "listings", allEntries = true)
+    @CacheEvict(value = "personagem", allEntries = true)
     public Personagem update(@PathVariable Long id, @RequestBody @Valid Personagem personagem) {
-        log.info("Atualizando anúncio: " + id);
+        log.info("Atualizando personagem: " + id);
 
         personagem.setId(id);
         return repository.save(personagem);
@@ -78,5 +87,4 @@ public class PersonagemController {
                 .orElseThrow(
                         () -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
-
 }
